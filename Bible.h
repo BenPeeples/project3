@@ -30,12 +30,8 @@ class Bible {	// A class to represent a version of the bible
    
    // OPTIONAL: you may add variables to keep track of
    // the current line and/or reference when scanning the file
-   //String to hold the current ref
-   Ref currentRef;
-   //String to hold the current verse
-   Verse currentVerse;
-   // String to hold the current line of the file
-   string currentLine; 
+   //Iterator to hold the current ref
+   map<Ref, int>::iterator currentRef;
 
    //The index
    map<Ref, int> index;
@@ -68,12 +64,7 @@ class Bible {	// A class to represent a version of the bible
    void openFile();
    //Close the file
    void closeFile();
-   //Get currentVerse
-   Verse getCurrentVerse();
-   //Get currentRef
-   Ref getCurrentRef();
-   //Get currentLine
-   string getCurrentLine();
+   
    //Build the index
    void buildTextIndex();
 };

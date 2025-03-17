@@ -14,86 +14,54 @@ using namespace std;
 Bible::Bible() { // Default constructor
 	infile = "/home/class/csc3004/Bibles/web-complete";
 	instream = ifstream(infile);
-	currentLine = "";
 	isOpen = true;
 	buildTextIndex();
+	currentRef = index.begin();
 }
 
 // Constructor – pass bible filename
-Bible::Bible(const string s) { infile = s; instream = ifstream(infile); isOpen = true; buildTextIndex(); }
+Bible::Bible(const string s) { infile = s; instream = ifstream(infile); isOpen = true; buildTextIndex(); currentRef = index.begin();
+}
 
-string Bible::getLine() { return currentLine; }
+
 
 // REQUIRED: lookup finds a given verse in this Bible
 Verse Bible::lookup(Ref ref, LookupResult& status) { 
-	map<Ref, int>::iterator it;
+	
 
-	it = index.find(ref);
-	if (it != index.end()) {
-		string line;
+	currentRef = index.find(ref);
+	if (currentRef != index.end()) {
+		string line = "TEST";
 		//Open the file at specific position
-		if (checkIfOpen()){
-			instream.seekg(it->second);
-			getline(instream, line);
-		}
-		else {
-			instream.open(infile);
-			instream.seekg(it->second);
-			getline (instream, line);
-		}
-		Verse output = Verse(line);
+		if (currentRef->second >= 0 && currentRef->second < 4272907) {
+		Ref outputRef = currentRef->first;
+		Verse output = Verse(outputRef);
 		status = SUCCESS;
-		currentVerse = output;
-		currentRef = output.getRef();
 		return output;
 	}
+	}
 	else {
-		Verse blank;
-		return blank;
+		currentRef = index.begin();
+
 	}
 }
 
 // REQUIRED: Return the next verse from the Bible file stream if the file is open.
 // If the file is not open, open the file and return the first verse.
 Verse Bible::nextVerse(LookupResult& status) {
-	map<Ref, int>::iterator it;
-	if (status == SUCCESS) {
-		it = index.find(currentRef);
-		it++;
-		if (it != index.end()) {
-			string line;
-			if (checkIfOpen()) {
-				instream.seekg(it->second);
-				getline(instream, line);
-			}
-			else {
-				instream.open(infile);
-				instream.seekg(it->second);
-				getline(instream, line);
-			}
-			Verse output = Verse(line);
-			status = SUCCESS;
-			currentVerse = output;
-			currentRef = output.getRef();
-			return output;
-		}
+	
+	if (currentRef != index.end()) {
+		currentRef++;
+		Ref outputRef = currentRef->first;
+		Verse output = Verse(outputRef);
+		status = SUCCESS;
+		return output;
 	}
 	else {
-		it = index.find(Ref(1, 1, 1));
-		string line;
-		if (checkIfOpen()) {
-			instream.seekg(it->second);
-			getline(instream, line);
-		}
-		else {
-			instream.open(infile);
-			instream.seekg(it->second);
-			getline(instream, line);
-		}
-		Verse output = Verse(line);
+		currentRef = index.begin();
+		Ref outputRef = currentRef->first;
+		Verse output = Verse(outputRef);
 		status = SUCCESS;
-		currentVerse = output;
-		currentRef = output.getRef();
 		return output;
 	}
 }
@@ -101,15 +69,16 @@ Verse Bible::nextVerse(LookupResult& status) {
 // REQUIRED: Return an error message string to describe status
 string Bible::error(LookupResult status) {
 	string output;
+	Ref ref = currentRef->first;
 	
 	if (status == NO_BOOK) {
-		output = "Error: no such book " + to_string(currentRef.getBook());
+		output = "Error: no such book " + to_string(ref.getBook());
 	}
 	if (status == NO_CHAPTER) {
-		output = "Error: no such chapter " + to_string(currentRef.getChap()) + " in " + currentRef.getBookName();
+		output = "Error: no such chapter " + to_string(ref.getChap()) + " in " + ref.getBookName();
 	}
 	if (status == NO_VERSE) {
-		output = "Error: no such verse " + to_string(currentRef.getVerse()) + " in " + currentRef.getBookName() + " " + to_string(currentRef.getChap());
+		output = "Error: no such verse " + to_string(ref.getVerse()) + " in " + ref.getBookName() + " " + to_string(ref.getChap());
 	}
 	if (status == OTHER) {
 		output = "Other Error";
@@ -135,11 +104,7 @@ void Bible::openFile() {instream.open(infile, std::ifstream::in);}
 
 void Bible::closeFile() {instream.close();}
 
-Ref Bible::getCurrentRef() { return currentRef; }
 
-Verse Bible::getCurrentVerse() { return currentVerse; }
-
-string Bible::getCurrentLine() { return currentLine; }
 
 void Bible::buildTextIndex() {
 	int position;

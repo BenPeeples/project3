@@ -18,7 +18,12 @@ Verse::Verse(const string s) {
     
     verseText = verseRef.getLeftOverTextFromConstructor();
 
-}  	
+}
+
+Verse::Verse(const Ref ref) {
+    verseRef = ref;
+    verseText = verseRef.getLeftOverTextFromConstructor();
+}
 
 // REQUIRED: Accessors
 string Verse::getVerse() {

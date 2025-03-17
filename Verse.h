@@ -24,6 +24,7 @@ class Verse {
    // REQUIRED: implement parse constructor
    Verse(const string s);
 		// pass entire line from file including reference and text
+   Verse(const Ref ref);
 
    // REQUIRED: implement accessor functions
    string getVerse();
