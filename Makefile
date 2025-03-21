@@ -30,10 +30,18 @@ CFLAGS= -g -std=c++11
 # main program to handle AJAX/CGI requests for Bible references
 #bibleajax.o:  bibleajax.cpp Ref.o Bible.o Verse.o
 #		$(CC) $(CFLAGS) -c bibleajax.cpp
-testreader.o : testreader.cpp Ref.o Bible.o Verse.o
-	$(CC) $(CFLAGS) -c testreader.cpp
+testreader: testreader.o Ref.h Bible.h Verse.h fifo.h
+	$(CC) $(CFLAGS) -o testreader Ref.o testreader.o Bible.o Verse.o fifo.o
 
+testreader.o: testreader.cpp Ref.o Bible.o Verse.o fifo.o
+	$(CC) $(CFLAGS) -c testreader.cpp Bible.o Ref.o Verse.o
 
+fifo.o: fifo.cpp fifo.h
+	$(CC) $(CFLAGS) -c fifo.cpp
+#sslookupserver.o: sslookupserver.cpp fifo.h textindex.h
+#	$(CC) $(CFLAGS) -c sslookupserver.cpp
+#sslookupserver: sslookupserver.o textindex.o fifo.o
+#	$(CC) $(CFLAGS) -o sslookupserver sslookupserver.o textindex.o fifo.o
 # TO DO: copy targets to build classes from Project 1:
 # Bible.o, Ref.o, Verse.o
 # Ref Object
