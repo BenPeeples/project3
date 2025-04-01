@@ -33,32 +33,43 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
 	if (currentRef != index.end()) {
 		string line = "TEST";
 		//Open the file at specific position
-		if (currentRef->second >= 0 && currentRef->second < 4272907) {
+		
 		Ref outputRef = currentRef->first;
 		Verse output = Verse(outputRef);
 		status = SUCCESS;
 		return output;
-	}
+		
 	}
 	else {
 		currentRef = index.begin();
-
+		map<int, int> chapterPerBook = { {1,50},{2,40},{3,27},{4,36},{5,34},{6,24},{7,21},{8,4},{9,31},{10,24},{11,22},{12,25},{13,29},{14,36},{15,10},{16,13},{17,10},{18,42},{19,150},{20,31},{21,12},{22,8},{23,66},{24,52},{25,5},{26,48},{27,12},{28,14},{29,3},{30,9},{31,1},{32,4},{33,7},{34,3},{35,3},{36,3},{37,2},{38,14},{39,4},{40,28},{41,16},{42,24},{43,21},{44,28},{45,16},{46,16},{47,13},{48,6},{49,6},{50,4},{51,4},{52,5},{53,3},{54,6},{55,4},{56,3},{57,1},{58,13},{59,5},{60,5},{61,3},{62,5},{63,1},{64,1},{65,1},{66,22} };
+		map<int, int>::iterator chapterCount = chapterPerBook.find(ref.getChap());
+		
+		if (ref.getBook() >66 || ref.getBook()< 1) {
+			status = NO_BOOK;
+		}
+		else if (chapterCount->second < ref.getChap() && ref.getChap() <1) {
+			status = NO_CHAPTER;
+		}
+		else {
+			status = NO_VERSE;
+		}
 	}
 }
 
 // REQUIRED: Return the next verse from the Bible file stream if the file is open.
 // If the file is not open, open the file and return the first verse.
 Verse Bible::nextVerse(LookupResult& status) {
-	
-	if (currentRef != index.end()) {
-		currentRef++;
+	Ref toCompare = Ref(66,22,21);
+	if (currentRef->first == toCompare) {
+		currentRef = index.begin();
 		Ref outputRef = currentRef->first;
 		Verse output = Verse(outputRef);
 		status = SUCCESS;
 		return output;
 	}
 	else {
-		currentRef = index.begin();
+		currentRef++;
 		Ref outputRef = currentRef->first;
 		Verse output = Verse(outputRef);
 		status = SUCCESS;
@@ -99,6 +110,9 @@ bool Bible::checkIfOpen() {
 	}
 	return false;
 }
+map<Ref, int>::iterator Bible::getCurrentRef() {
+	return currentRef;
+}
 
 void Bible::openFile() {instream.open(infile, std::ifstream::in);}
 
@@ -118,8 +132,8 @@ void Bible::buildTextIndex() {
 			numberOfAddedRefs++;
 		}
 	}
-	cout << "Number of References added: " << numberOfAddedRefs << endl;
-	cout << "Last Byte Offset: " << position << endl;
+	//cout << "Number of References added: " << numberOfAddedRefs << endl;
+	//cout << "Last Byte Offset: " << position << endl;
 }
 	
 // OPTIONAL access functions

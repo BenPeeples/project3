@@ -18,36 +18,24 @@ USER= benpeeples
 CC= g++
 CFLAGS= -g -std=c++11
 
-#all:	bibleajax.cgi PutCGI PutHTML
+all:	 PutCGI PutHTML Biblelookupclient Biblelookupserver
 
 # TO DO: For bibleajax.cgi, add dependencies to include
 # compiled classes from Project 1 to be linked into the executable program
-#bibleajax.cgi:	bibleajax.o 
-#		$(CC) $(CFLAGS) -o bibleajax.cgi bibleajax.o Ref.o Bible.o Verse.o -lcgicc
-#		# -l option is necessary to link with cgicc library
-
+#bibleajax.cgi:	bibleajax.o
+#		$(CC) $(CFLAGS) -o bibleajax.cgi Biblelookupclient.o Ref.o Bible.o Verse.o fifo.o -lcgicc
+		# -l option is necessary to link with cgicc library
+		
 
 # main program to handle AJAX/CGI requests for Bible references
-#bibleajax.o:  bibleajax.cpp Ref.o Bible.o Verse.o
-#		$(CC) $(CFLAGS) -c bibleajax.cpp
-testreader: testreader.o Ref.h Bible.h Verse.h fifo.h
-	$(CC) $(CFLAGS) -o testreader Ref.o testreader.o Bible.o Verse.o fifo.o
+#bibleajax.o:  Biblelookupclient.cpp Ref.h Bible.h Verse.h fifo.h
+#		$(CC) $(CFLAGS) -c Biblelookupclient.cpp
 
-testreader.o: testreader.cpp Ref.o Bible.o Verse.o fifo.o
-	$(CC) $(CFLAGS) -c testreader.cpp Bible.o Ref.o Verse.o
-
-fifo.o: fifo.cpp fifo.h
-	$(CC) $(CFLAGS) -c fifo.cpp
-#sslookupserver.o: sslookupserver.cpp fifo.h textindex.h
-#	$(CC) $(CFLAGS) -c sslookupserver.cpp
-#sslookupserver: sslookupserver.o textindex.o fifo.o
-#	$(CC) $(CFLAGS) -o sslookupserver sslookupserver.o textindex.o fifo.o
 # TO DO: copy targets to build classes from Project 1:
 # Bible.o, Ref.o, Verse.o
 # Ref Object
 Ref.o : Ref.h Ref.cpp
 	$(CC) $(CFLAGS) -c Ref.cpp
-
 
 # Verse Object
 Verse.o : Ref.h Verse.h Verse.cpp
@@ -57,19 +45,38 @@ Verse.o : Ref.h Verse.h Verse.cpp
 Bible.o : Ref.h Verse.h Bible.h Bible.cpp
 	$(CC) $(CFLAGS) -c Bible.cpp
 
+fifo.o: fifo.cpp fifo.h
+	$(CC) $(CFLAGS) -c fifo.cpp
+
+Biblelookupclient.o: Biblelookupclient.cpp fifo.h
+	$(CC) $(CFLAGS) -c Biblelookupclient.cpp fifo.h
+
+Biblelookupserver.o: Biblelookupserver.cpp Ref.h Bible.h Verse.h fifo.h
+	$(CC) $(CFLAGS) -c Biblelookupserver.cpp Bible.h Ref.h Verse.h fifo.h
+
+Biblelookupclient: Biblelookupclient.o fifo.o
+	$(CC) $(CFLAGS) -o Biblelookupclient Biblelookupclient.o fifo.o -lcgicc
+
+Biblelookupserver: Biblelookupserver.o fifo.o Bible.o Ref.o Verse.o
+	$(CC) $(CFLAGS) -o Biblelookupserver Biblelookupserver.o fifo.o Bible.o Ref.o Verse.o
+
+LookUp.cgi: Biblelookupclient.o
+	$(CC) $(CFLAGS) -o LookUp.cgi Biblelookupclient.o fifo.o -lcgicc
+
 			
-#PutCGI:	bibleajax.cgi
-#		chmod 755 bibleajax.cgi
-#		cp bibleajax.cgi /var/www/html/class/csc3004/$(USER)/cgi-bin
-#
-#		echo "Current contents of your cgi-bin directory: "
-#		ls -l /var/www/html/class/csc3004/$(USER)/cgi-bin/
+PutCGI:	LookUp.cgi
+		chmod 755 LookUp.cgi
+		cp LookUp.cgi /var/www/html/class/csc3004/$(USER)/cgi-bin
 
-#PutHTML:
-#		cp bibleajax.html /var/www/html/class/csc3004/$(USER)
-#
-#		echo "Current contents of your HTML directory: "
-#		ls -l /var/www/html/class/csc3004/$(USER)
+		echo "Current contents of your cgi-bin directory: "
+		ls -l /var/www/html/class/csc3004/$(USER)/cgi-bin/
 
-#clean:		
-#		rm *.o core bibleajax.cgi
+PutHTML:
+		cp bibleindex.html /var/www/html/class/csc3004/$(USER)
+
+		echo "Current contents of your HTML directory: "
+		ls -l /var/www/html/class/csc3004/$(USER)
+
+clean:		
+		rm *.o core Biblelookupclient
+	

@@ -64,6 +64,8 @@ class Bible {	// A class to represent a version of the bible
    void openFile();
    //Close the file
    void closeFile();
+   //Return currentRef iterator.
+   map<Ref, int>::iterator getCurrentRef();
    
    //Build the index
    void buildTextIndex();

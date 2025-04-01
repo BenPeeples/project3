@@ -27,6 +27,7 @@ int main() {
 	int refBook;
 	int refChap;
 	int refVerse;
+	int verseNum;
 	string bibleType;
 	string message;
 	Ref reference;
@@ -53,11 +54,22 @@ int main() {
 		refChap = stoi(tokens[1]);
 
 		refVerse = stoi(tokens[2]);
-
-
-		/*bibleType = *delimmitedString++;
-
+		int end = tokens.size();
+		//Check for amount of verses input
+		if (end >= 4) {
+			verseNum = stoi(tokens[3]);
+		}
+		else {
+			verseNum = 1;
+		}
+		//Check for input Bibletype
+		if (end >= 5) {
+			bibleType = tokens[4];
+		}
+		else { bibleType = "World English Bible"; }	
 		
+
+		//Set Bibletype
 		if (bibleType == "World English Bible") {
 			bible = Bible("/home/class/csc3004/Bibles/web-complete");
 		}
@@ -72,11 +84,17 @@ int main() {
 		}
 		if (bibleType == "Webster Translation") {
 			bible = Bible("/home/class/csc3004/Bibles/webster-complete");
-		}*/
-
+		}
+		//Create reference to search
 		reference = Ref(refBook, refChap, refVerse);
-
+		//Search for reference and output to client
 		output = bible.lookup(reference, status);
+		//IMPLEMENT THE ABILITY TO OUTPUT MULTIPLE VERSE
+		// 
+		//
+		//
+		//
+
 		if (status == SUCCESS) {
 			titleOutput = reference.getBookName();
 			titleOutput.append(" " + to_string(reference.getChap()) + " "); titleOutput.append(to_string(reference.getVerse()));
